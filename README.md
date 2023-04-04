@@ -1,6 +1,6 @@
 # MorphEm
 
-MorphEm_70k v2.0 is ready for download at {insert link}.
+MorphEm_70k v2.0 is ready to download at {insert link}.
 
 `morphem.ipynb` 
 * Notebook example for loading and visualizing the data.
