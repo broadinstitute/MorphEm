@@ -96,12 +96,15 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
 
             predictions = np.concatenate(predictions)
             ground_truth = np.concatenate(ground_truth)
-
         # Compute evaluation metrics
+        int_labels = np.unique(ground_truth)
+        str_labels = [target_value[idx] for idx in int_labels]
+        
         accuracy = np.mean(predictions == ground_truth)
-        report_str = classification_report(ground_truth, predictions)
-        report_dict = classification_report(ground_truth, predictions, output_dict=True)
-        f1score_macro = f1_score(ground_truth, predictions, average='macro')
+        report_str = classification_report(ground_truth, predictions, labels=int_labels, target_names=str_labels)
+        report_dict = classification_report(ground_truth, predictions, labels=int_labels, \
+                                            target_names=str_labels, output_dict=True)
+        f1score_macro = f1_score(ground_truth, predictions, labels=np.unique(ground_truth), average='macro')
 
         accuracies.append(accuracy)
         f1scores_macro.append(f1score_macro)
