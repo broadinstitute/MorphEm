@@ -2,6 +2,12 @@
 
 MorphEm_70k v2.0 is ready to download at [here](https://caicedolab.s3.us-west-2.amazonaws.com/MorphEm/morphem_70k_2.0.zip).
 
+## Requirements
+
+TODO: We will compile a requirement.txt file including all the dependencies soon. Briefly, we use pytorch for feature extraction and faiss for KNN classifier. 
+Install faiss by running `pip install faiss`.
+
+## Training and Testing
 `morphem.ipynb` 
 * Notebook example for loading and visualizing the data.
 
@@ -11,7 +17,7 @@ MorphEm_70k v2.0 is ready to download at [here](https://caicedolab.s3.us-west-2.
     * `dataset_name`: name of dataset, set to "HPA", "Allen", or "CP"
 * Images are loaded with custom dataset loader in `folded_dataset.py`.
 * Features are extracted with ResNet18 model pretrained on ImageNet images.
-* By default, features are stored in `root_dir/features`, and contains three subfolders named by `dataset_name`.
+* By default, features are stored in `root_dir/features`, and contains one subfolder for each `dataset_name`.
 
 
 `run_benchmark.py`
