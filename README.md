@@ -4,10 +4,11 @@ MorphEm_70k v2.0 is ready to download at [here](https://caicedolab.s3.us-west-2.
 
 ## Requirements
 
-Set up a conda environment with required packages:
+We used Python 3.9.15 to run all the experiments. Set up the environment by running:
 ```
-conda env create -f environment.yml
+pip install -r <path-to-repo>/requirements.txt
 ```
+
 
 ## Training and Testing
 `morphem.ipynb` 
