@@ -167,7 +167,13 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
             predictions = []
             ground_truth = []
             for group_ind, group in enumerate(groups):
-                model = utils.FaissKNeighbors(k=1)
+                if model_choice == 'knn':
+                    model = utils.FaissKNeighbors(k=1)
+                elif model_choice == 'sgd':
+                    model = SGDClassifier(alpha=0.001, max_iter=100)
+                else:
+                    print(f'{model_choice} is not implemented. Try sgd or knn.')
+                    break
 
                 model.fit(rest_X[group_ind], rest_Y[group_ind])
                 group_predictions = model.predict(takeout_X[group_ind])
