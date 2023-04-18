@@ -19,69 +19,78 @@ def create_umap(dataset, features_path, df_path, dest_dir, label_list):
     # Helper function
     # Create umap and save in result directory
     
+    if not os.path.exists(dest_dir+ '/'):
+        os.makedirs(dest_dir+ '/')
+        
+    print('Creating umap for features')
+    
     # Load features and metadata
     features = np.load(features_path)
     df = pd.read_csv(df_path)
     
     # Split into training and testing
-    train_idx = np.where(df['train_test_split'] == 'Train')[0]
-    test_idx = np.where(df['train_test_split'] != 'Train')[0]
-    train_feat = features[train_idx]
-    test_feat = features[test_idx]
-
-    if not os.path.exists(dest_dir+ '/'):
-        os.makedirs(dest_dir+ '/')
+    tasks = list(df['train_test_split'].unique())
+    tasks.remove('Train')
     
-    # Fit umap on training and project testing data
+    train_idx = np.where(df['train_test_split'] == 'Train')[0]
+    all_test_indices = [np.where(df[task])[0] for task in tasks]
+    train_feat = features[train_idx]
+    test_feat = [features[idx] for idx in all_test_indices]
+    
+    # Fit umap on train set
     reducer = umap.UMAP(n_neighbors=15, n_components=2)
     train_embeddings = reducer.fit_transform(train_feat)
     train_aux = pd.concat((pd.DataFrame(train_embeddings, columns=["X", "Y"]), 
                            df.loc[train_idx].reset_index()), axis=1)
     
-    test_embeddings = reducer.transform(test_feat)
-    test_aux = pd.concat((pd.DataFrame(test_embeddings, columns=["X", "Y"]), 
-                          df.loc[test_idx].reset_index()), axis=1)
-    
+    # Transform test set with fitted umap 
+    test_aux_list = []
+    for i in range(len(tasks)):
+        test_embeddings = reducer.transform(test_feat[i])
+        test_aux = pd.concat((pd.DataFrame(test_embeddings, columns=["X", "Y"]), 
+                              df.loc[all_test_indices[i]].reset_index()), axis=1)
+        test_aux_list.append(test_aux)
+
     # Plot the UMAP embedding
-    fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(20, 20))
-
-    pal1 = sb.hls_palette(len(df[label_list[0]].unique())).as_hex()
-    pal2 = sb.hls_palette(len(df[label_list[1]].unique())).as_hex()
-    hue_order1 = list(df[label_list[0]].unique())
-    hue_order2 = list(df[label_list[1]].unique())
-    markers = ['o', 'v', '*', 'P']
+    fig, axs = plt.subplots(nrows=2, ncols=len(tasks)+1, figsize=(20*len(tasks)+1, 20))
     
-    # Train set classification label umap
-    a = sb.scatterplot(ax=axs[0,0],data=train_aux, x="X", y="Y", s=20, hue='Label', 
-                       hue_order=hue_order1[:len(train_aux.Label.unique())],
-                       palette=pal1[:len(train_aux.Label.unique())])
+    # Set up color palette
+    col1 = sb.hls_palette(len(df[label_list[0]].unique())).as_hex()
+    col2 = sb.hls_palette(len(df[label_list[1]].unique())).as_hex()
+    
+    pal1, pal2 = {}, {}
+    for i in range(len(df[label_list[0]].unique())):
+        val = df[label_list[0]].unique()[i]
+        pal1[val] = col1[i]
+
+    for i in range(len(df[label_list[1]].unique())):
+        val = df[label_list[1]].unique()[i]
+        pal2[val] = col2[i]
+
+
+    # Plot train set classification label umap
+    a = sb.scatterplot(ax=axs[0,0],data=train_aux, x="X", y="Y", s=5, hue='Label', palette=pal1)
     a.set(title=f'UMAP of {dataset} Train Set')
-    lgda = axs[0,0].legend(bbox_to_anchor=(-0.1, 1), loc=1, borderaxespad=0., title='Label')
-    
-    # Test set classification label umap
-    b = sb.scatterplot(ax=axs[0,1], data=test_aux, x="X", y="Y", s=20, hue='Label', hue_order=hue_order1,
-                       palette=pal1[:len(test_aux.Label.unique())], style='train_test_split', 
-                       markers=markers[:len(test_aux.train_test_split.unique())])
-    b.set(title=f'UMAP of {dataset} Test Set')
-    lgdb = axs[0,1].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
-    # Train set subgroup umap
-    c = sb.scatterplot(ax=axs[1,0],data=train_aux, x="X", y="Y", s=20, hue=label_list[1],
-                       hue_order=hue_order2[:len(train_aux[label_list[1]].unique())],
-                       palette=pal2[:len(train_aux[label_list[1]].unique())])
+    # Plot train set subgroup umap
+    c = sb.scatterplot(ax=axs[1,0],data=train_aux, x="X", y="Y", s=5, hue=label_list[1], palette=pal2)
     c.set(title=f'UMAP of {dataset} Train Set')
-    lgdc =axs[1,0].legend(bbox_to_anchor=(-0.1, 1), loc=1, borderaxespad=0., title=label_list[1])
-    
-    # Test set subgroup umap
-    d = sb.scatterplot(ax=axs[1,1], data=test_aux, x="X", y="Y", s=20, hue=label_list[1], 
-                       hue_order=hue_order2[:len(test_aux[label_list[1]].unique())],
-                       palette=pal2[:len(test_aux[label_list[1]].unique())], style='train_test_split',
-                       markers=markers[:len(test_aux.train_test_split.unique())])
 
-    d.set(title=f'UMAP of {dataset} Test Set')
-    lgdd = axs[1,1].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-    
-    fig.savefig(f'{dest_dir}/umap_{dataset}.png',bbox_extra_artists=(lgda,lgdb,lgdc,lgdd), bbox_inches='tight')
+    legend_list = []
+    for i in range(len(tasks)):
+        # Plot test set classification label umap
+        b = sb.scatterplot(ax=axs[0,i+1], data=test_aux_list[i], x="X", y="Y", s=5, hue='Label', 
+                           palette=pal1)
+        b.set(title=f'UMAP of {dataset} Test Set for {tasks[i]}')
+
+        # Plot test set subgroup umap
+        d = sb.scatterplot(ax=axs[1,i+1], data=test_aux_list[i], x="X", y="Y", s=5, hue=label_list[1], 
+                           palette=pal2)
+        d.set(title=f'UMAP of {dataset} Test Set for {tasks[i]}')
+
+    # Save figure
+    fig.savefig(f'{dest_dir}/umap_{dataset}.png')
+    print(f'Saved umap figure at {dest_dir} as umap_{dataset}.png')
     
     return
 
@@ -90,7 +99,9 @@ def create_umap(dataset, features_path, df_path, dest_dir, label_list):
 ########################################################
 
 def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
-
+    
+    print('Running classification pipeline...')
+    
     # Load features and metadata
     print('Load features...')
 

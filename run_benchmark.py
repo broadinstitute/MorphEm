@@ -14,7 +14,7 @@ def get_args_parser():
     # python run_benchmark.py --root_dir "../datasets/morphem_70k_2.0" --dest_dir "../results" \
     #                         --feature_dir "../datasets/morphem_70k_2.0/features" \
     #                         --feature_file "pretrained_resnet18_features.npy" \
-    #                         --classifier "knn" --umap True
+    #                         --classifier "knn" --umap
     #                          
 
     
@@ -29,10 +29,8 @@ def get_args_parser():
 
     
     # Training parameters
-    # parser.add_argument('--gpu', default=None, type=int, help='GPU to use')
     parser.add_argument('--classifier', default='knn', type=str, help='Classifier to use')
-    parser.add_argument('--umap', default=False, type=bool, help='Output umap of features')
- 
+    parser.add_argument('--umap', default=False, action='store_true', help='Create umap for features')
     return parser
 
 
@@ -61,7 +59,7 @@ def main(args):
     # python run_benchmark.py --root_dir "./datasets/morphem_70k_2.0" --dest_dir "./results" \
     #                         --feature_dir "../datasets/morphem_70k_2.0/features" \
     #                         --feature_file "pretrained_resnet18_features.npy" \
-    #                         --classifier "knn" --umap True
+    #                         --classifier "knn" --umap
     
     
     # read all input parameters
@@ -72,7 +70,6 @@ def main(args):
     feature_dir           = args.feature_dir
     feature_file          = args.feature_file
     umap                  = args.umap
-    # gpu                   = args.gpu
     
     # encode dataset, task, and classifier
     task_dict = pd.DataFrame({'dataset':['Allen', 'HPA', 'CP'], 
@@ -81,7 +78,7 @@ def main(args):
                               'leaveout_label': [None, 'cell_type', 'Plate'], \
                               'umap_label': ['Structure', 'cell_type', 'source'] 
                              })
-    print('Results:')
+    
     full_result_df = pd.DataFrame(columns=['dataset', 'task', 'classifier', 'accuracy', 'f1_score_macro'])
     
     # Iterrate over each dataset
@@ -101,6 +98,7 @@ def main(args):
         results = evaluation.evaluate(features_path, df_path, leave_out, leaveout_label, classifier)
 
         # Print the full results
+        print('Results:')
         for task_ind, task in enumerate(results["tasks"]):
             print(f'Results for {dataset} {task} with {classifier} :')
             print(results["reports_str"][task_ind])
