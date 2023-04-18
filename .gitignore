@@ -5,4 +5,7 @@
 # Ignore jupyter notebook checkpoints
 .ipynb_checkpoints
 
+.Ds_Store
+.idea/
+
 
