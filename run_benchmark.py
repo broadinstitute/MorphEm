@@ -24,7 +24,7 @@ def get_args_parser():
         
     parser.add_argument('--root_dir', default="../datasets/morphem_70k_2.0", type=str, help='Path to data directory')
     parser.add_argument('--dest_dir', default="../results", type=str, help='Path to save results')
-    parser.add_argument('--feature_dir', default='pretrained_resnet18_features.npy', type=str, help='Filename of features')
+    parser.add_argument('--feature_dir', default='../datasets/morphem_70k_2.0/features', type=str, help='Path to feature directory')
     parser.add_argument('--feature_file', default='pretrained_resnet18_features.npy', type=str, help='Filename of features')
 
     
