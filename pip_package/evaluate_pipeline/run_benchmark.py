@@ -2,7 +2,7 @@
 import pandas as pd
 import os
 import json
-from my_pip_package.evaluation import evaluate, create_umap
+from evaluate_pipeline.evaluation import evaluate, create_umap
 
 import warnings
 warnings.filterwarnings("ignore")

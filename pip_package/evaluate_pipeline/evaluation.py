@@ -6,7 +6,7 @@ import umap
 import matplotlib.pyplot as plt
 import seaborn as sb
 
-import my_pip_package.utils as utils
+import evaluate_pipeline.utils as utils
 
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import f1_score, classification_report

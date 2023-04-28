@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
-from my_pip_package import __version__, __author__
+from evaluate_pipeline import __version__, __author__
 
 setup(
-    name='my_pip_package',
+    name='evaluate_pipeline',
     version=__version__,
 
     url='https://github.com/broadinstitute/MorphEm',
