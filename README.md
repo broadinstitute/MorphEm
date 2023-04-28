@@ -6,8 +6,10 @@ MorphEm_70k v2.0 is ready to download at [here](https://caicedolab.s3.us-west-2.
 
 We used Python 3.9.15 to run all the experiments. Set up the environment by running:
 ```
-$pip install -r <path-to-repo>/requirements.txt
+pip install -r <path-to-repo>/requirements.txt
 ```
+
+
 ## Training and Testing
 `morphem.ipynb` 
 * Notebook example for loading and visualizing the data.
@@ -24,9 +26,12 @@ $pip install -r <path-to-repo>/requirements.txt
 `run_benchmark.py`
 * Command line script to run the evaluation pipeline. Example command:
 ```
-python run_benchmark.py --root_dir "../datasets/morphem_70k_2.0" --dest_dir "../results" \
+python run_benchmark.py --root_dir "../datasets/morphem_70k_2.0" 
+                        --dest_dir "../results" \
                         --feature_dir "../datasets/morphem_70k_2.0/features" \
                         --feature_file "pretrained_resnet18_features.npy" \
+                        --use_gpu \
+                        --umap \
                         --classifier "knn"
 ```
  * `root_dir`: Path to root directory where the morphem dataset is stored.
@@ -34,7 +39,10 @@ python run_benchmark.py --root_dir "../datasets/morphem_70k_2.0" --dest_dir "../
                and a dictionary for each dataset that stores more detailed results on specific classes.
  * `feature_dir`: Path to directory where features are stored. Within the feature folder there should be three subfolders, one for each dataset.
  * `feature_file`: Filename of features.
+ * `use_gpu`: Use GPU for KNN computing.
+ * `umap`: Create umap for features. 
  * `classifier`: Choice of classifier to use. Currently can be set to 'knn' or 'sgd'.
+ 
 
 
 `Evaluation_pipeline.ipynb`
