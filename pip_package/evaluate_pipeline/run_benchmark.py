@@ -24,7 +24,7 @@ def save_results(results, dest_dir, dataset, classifier):
 
     return
             
-def run_benchmark(root_dir, dest_dir, feature_dir, feature_file, classifier='knn', umap=False):
+def run_benchmark(root_dir, dest_dir, feature_dir, feature_file, classifier='knn', umap=False, use_gpu=True):
 
     # encode dataset, task, and classifier
     task_dict = pd.DataFrame({'dataset':['Allen', 'HPA', 'CP'], 
@@ -50,7 +50,7 @@ def run_benchmark(root_dir, dest_dir, feature_dir, feature_file, classifier='knn
         # Create umap and run classification
         if umap:
             create_umap(dataset, features_path, df_path, dest_dir, ['Label', umap_label])
-        results = evaluate(features_path, df_path, leave_out, leaveout_label, classifier)
+        results = evaluate(features_path, df_path, leave_out, leaveout_label, classifier, use_gpu)
 
         # Print the full results
         print('Results:')

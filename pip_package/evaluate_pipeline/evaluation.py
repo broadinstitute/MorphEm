@@ -98,7 +98,7 @@ def create_umap(dataset, features_path, df_path, dest_dir, label_list):
 ## Evaluation Function
 ########################################################
 
-def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
+def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice, use_gpu: bool):
     
     print('Running classification pipeline...')
     
@@ -163,7 +163,7 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
         if task != leave_out: # standard classification
 
             if model_choice == 'knn':
-                model = utils.FaissKNeighbors(k=1)
+                model = utils.FaissKNeighbors(k=1, use_gpu=use_gpu)
             elif model_choice == 'sgd':
                 model = SGDClassifier(alpha=0.001, max_iter=100)
             else:
@@ -179,7 +179,7 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
             ground_truth = []
             for group_ind, group in enumerate(groups):
                 if model_choice == 'knn':
-                    model = utils.FaissKNeighbors(k=1)
+                    model = utils.FaissKNeighbors(k=1, use_gpu=use_gpu)
                 elif model_choice == 'sgd':
                     model = SGDClassifier(alpha=0.001, max_iter=100)
                 else:
