@@ -21,6 +21,7 @@ The function requires the following input parameters:
 `feature_file` : filename of features.  
 
 Optional parameters include:  
-`classifier` : choose from 'knn' and 'sgd'. Default is 'knn'.
-`umap` : whether or not to produce UMAP for features. Default is False.
+
+`classifier` : choose from 'knn' and 'sgd'. Default is 'knn'.  
+`umap` : whether or not to produce UMAP for features. Default is False.  
 `use_gpu` : use GPU or CPU for KNN classification. Default is True (use GPU).
