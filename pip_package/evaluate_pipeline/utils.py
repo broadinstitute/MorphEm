@@ -6,7 +6,7 @@ import faiss
 ########################################################
 
 class FaissKNeighbors:
-    def __init__(self, k=5, use_gpu: bool):
+    def __init__(self, use_gpu: bool, k=5):
         self.index = None
         self.y = None
         self.k = k
