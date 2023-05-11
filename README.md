@@ -7,6 +7,7 @@ MorphEm_70k v2.0 is ready to download at [here](https://caicedolab.s3.us-west-2.
 We used Python 3.9.15 to run all the experiments. Set up the environment by running:
 ```
 pip install -r <path-to-repo>/requirements.txt
+conda install -c pytorch faiss-gpu
 ```
 
 
