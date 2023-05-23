@@ -32,6 +32,7 @@ python run_benchmark.py --root_dir "../datasets/morphem_70k_2.0"
                         --feature_dir "../datasets/morphem_70k_2.0/features" \
                         --feature_file "pretrained_resnet18_features.npy" \
                         --use_gpu \
+                        --umap \
                         --classifier "knn"
 ```
  * `root_dir`: Path to root directory where the morphem dataset is stored.
@@ -39,7 +40,10 @@ python run_benchmark.py --root_dir "../datasets/morphem_70k_2.0"
                and a dictionary for each dataset that stores more detailed results on specific classes.
  * `feature_dir`: Path to directory where features are stored. Within the feature folder there should be three subfolders, one for each dataset.
  * `feature_file`: Filename of features.
+ * `use_gpu`: Use GPU for KNN computing.
+ * `umap`: Create umap for features. 
  * `classifier`: Choice of classifier to use. Currently can be set to 'knn' or 'sgd'.
+ 
 
 
 `Evaluation_pipeline.ipynb`

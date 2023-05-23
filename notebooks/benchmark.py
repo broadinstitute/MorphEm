@@ -15,7 +15,8 @@ def get_args_parser():
                             --feature_dir "../datasets/morphem_70k_2.0/features" \
                             --feature_file "pretrained_resnet18_features.npy" \
                             --use_gpu \
-                            --classifier "knn"
+                            --classifier "knn" \
+                            --umap
     """
 
     parser = argparse.ArgumentParser('MorphEm-benchmarking', add_help=False)
@@ -32,7 +33,7 @@ def get_args_parser():
     # Training parameters
     parser.add_argument('--use_gpu', default=False, action='store_true', help='Use GPU to run classifier')
     parser.add_argument('--classifier', default='knn', type=str, choices=['knn', 'sgd'], help='Classifier to use')
-
+    parser.add_argument('--umap', default=False, action='store_true', help='Create umap for features')
     return parser
 
 
@@ -63,15 +64,16 @@ def main(args):
     feature_dir = args.feature_dir
     feature_file = args.feature_file
     use_gpu = args.use_gpu
-    # gpu = args.gpu
+    umap = args.umap
 
     # encode dataset, task, and classifier
     task_dict = pd.DataFrame({'dataset': ['Allen', 'HPA', 'CP'],
                               'classifier': [classifier] * 3,
                               'leave_out': [None, 'Task_three', 'Task_four'],
-                              'leaveout_label': [None, 'cell_type', 'Plate']
+                              'leaveout_label': [None, 'cell_type', 'Plate'],
+                              'umap_label': ['Structure', 'cell_type', 'source'] 
                               })
-    print('Results:')
+    
     full_result_df = pd.DataFrame(columns=['dataset', 'task', 'classifier', 'accuracy', 'f1_score_macro'])
 
     # Iterate over each dataset
@@ -80,13 +82,18 @@ def main(args):
         classifier = row.classifier
         leave_out = row.leave_out
         leaveout_label = row.leaveout_label
-
+        umap_label = row.umap_label
+        
         features_path = f'{feature_dir}/{dataset}/{feature_file}'
         df_path = f'{root_dir}/{dataset}/enriched_meta.csv'
-
-        results = evaluation.evaluate(features_path, df_path, leave_out, leaveout_label, classifier, use_gpu)
+        
+        # Create umap and run classification
+        if umap:
+            evaluation.create_umap(dataset, features_path, df_path, dest_dir, ['Label', umap_label])
+        results = evaluation.evaluate(features_path, df_path, leave_out, leaveout_label, classifier)
 
         # Print the full results
+        print('Results:')
         for task_ind, task in enumerate(results["tasks"]):
             print(f'Results for {dataset} {task} with {classifier} :')
             print(results["reports_str"][task_ind])
