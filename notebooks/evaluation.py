@@ -98,7 +98,7 @@ def create_umap(dataset, features_path, df_path, dest_dir, label_list):
 ## Evaluation Function
 ########################################################
 
-def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
+def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice, use_gpu=True, knn_metric='l2'):
     
     print('Running classification pipeline...')
     
@@ -111,6 +111,11 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
     # Count number of tasks
     tasks = list(df['train_test_split'].unique())
     tasks.remove('Train')
+    
+    # Sort task from 1->4 for consistency when displaying results
+    mapper = {"Task_one": 1, "Task_two": 2, "Task_three": 3, "Task_four": 4}
+    tasks = sorted(tasks, key=lambda x: mapper[x])
+
     if leave_out is not None:
         leaveout_ind = tasks.index(leave_out)
 
@@ -156,7 +161,7 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
     for task_ind, task in enumerate(tasks):
         if task != leave_out:  # standard classification
             if model_choice == 'knn':
-                model = utils.FaissKNeighbors(k=1, use_gpu=use_gpu)
+                model = utils.FaissKNeighbors(k=1, use_gpu=use_gpu, metric=knn_metric)
             elif model_choice == 'sgd':
                 model = SGDClassifier(alpha=0.001, max_iter=100)
             else:
@@ -171,7 +176,7 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
             ground_truth = []
             for group_ind, group in enumerate(groups):
                 if model_choice == 'knn':
-                    model = utils.FaissKNeighbors(k=1)
+                    model = utils.FaissKNeighbors(k=1, use_gpu=use_gpu)
                 elif model_choice == 'sgd':
                     model = SGDClassifier(alpha=0.001, max_iter=100)
                 else:
@@ -187,6 +192,7 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice):
 
             predictions = np.concatenate(predictions)
             ground_truth = np.concatenate(ground_truth)
+            
         # Compute evaluation metrics
         int_labels = np.unique(ground_truth)
         str_labels = [target_value[idx] for idx in int_labels]

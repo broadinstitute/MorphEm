@@ -24,7 +24,7 @@ def save_results(results, dest_dir, dataset, classifier):
 
     return
             
-def run_benchmark(root_dir, dest_dir, feature_dir, feature_file, classifier='knn', umap=False, use_gpu=True):
+def run_benchmark(root_dir, dest_dir, feature_dir, feature_file, classifier='knn', umap=False, use_gpu=True, knn_metric='l2'):
 
     # encode dataset, task, and classifier
     task_dict = pd.DataFrame({'dataset':['Allen', 'HPA', 'CP'], 
@@ -50,7 +50,7 @@ def run_benchmark(root_dir, dest_dir, feature_dir, feature_file, classifier='knn
         # Create umap and run classification
         if umap:
             create_umap(dataset, features_path, df_path, dest_dir, ['Label', umap_label])
-        results = evaluate(features_path, df_path, leave_out, leaveout_label, classifier, use_gpu)
+        results = evaluate(features_path, df_path, leave_out, leaveout_label, classifier, use_gpu, knn_metric)
 
         # Print the full results
         print('Results:')
@@ -66,5 +66,8 @@ def run_benchmark(root_dir, dest_dir, feature_dir, feature_file, classifier='knn
                         'task': results["tasks"],'classifier': [classifier for i in range(len(results["tasks"]))],\
                         'accuracy': results["accuracies"],'f1_score_macro': results["f1scores_macro"]})
         full_result_df = pd.concat([full_result_df, result_temp]).reset_index(drop=True)
-            
-    full_result_df.to_csv(f'{dest_dir}/{classifier}_full_results.csv', index=False) 
+    
+    if classifier == 'knn':        
+        full_result_df.to_csv(f'{dest_dir}/{classifier}_{knn_metric}_full_results.csv', index=False) 
+    else:
+        full_result_df.to_csv(f'{dest_dir}/{classifier}_full_results.csv', index=False)
