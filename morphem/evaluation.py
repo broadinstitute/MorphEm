@@ -163,7 +163,7 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice, us
         if task != leave_out: # standard classification
 
             if model_choice == 'knn':
-                model = utils.FaissKNeighbors(k=1, use_gpu=use_gpu, knn_metric)
+                model = utils.FaissKNeighbors(k=1, use_gpu=use_gpu, metric=knn_metric)
             elif model_choice == 'sgd':
                 model = SGDClassifier(alpha=0.001, max_iter=100)
             else:
@@ -179,7 +179,7 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice, us
             ground_truth = []
             for group_ind, group in enumerate(groups):
                 if model_choice == 'knn':
-                    model = utils.FaissKNeighbors(k=1, use_gpu=use_gpu, knn_metric)
+                    model = utils.FaissKNeighbors(k=1, use_gpu=use_gpu, metric=knn_metric)
                 elif model_choice == 'sgd':
                     model = SGDClassifier(alpha=0.001, max_iter=100)
                 else:

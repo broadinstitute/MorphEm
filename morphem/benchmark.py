@@ -7,7 +7,7 @@ from morphem.evaluation import evaluate, create_umap
 import warnings
 warnings.filterwarnings("ignore")
 
-def save_results(results, dest_dir, dataset, classifier):
+def save_results(results, dest_dir, dataset, classifier, knn_metric):
     # Helper function
     # Save results for each dataset as a json dictionary at dest_dir
     full_reports_dict = {}
@@ -17,8 +17,12 @@ def save_results(results, dest_dir, dataset, classifier):
 
     if not os.path.exists(dest_dir+ '/'):
         os.makedirs(dest_dir+ '/')
-
-    dict_path = f'{dest_dir}/{dataset}_{classifier}_results.json'
+    
+    if classifier == 'knn':
+        dict_path = f'{dest_dir}/{dataset}_{classifier}_{knn_metric}_results.json'
+    else:
+        dict_path = f'{dest_dir}/{dataset}_{classifier}_results.json'
+        
     with open(dict_path, 'w') as f:
         json.dump(full_reports_dict, f)
 
@@ -49,8 +53,19 @@ def run_benchmark(root_dir, dest_dir, feature_dir, feature_file, classifier='knn
         
         # Create umap and run classification
         if umap:
-            create_umap(dataset, features_path, df_path, dest_dir, ['Label', umap_label])
-        results = evaluate(features_path, df_path, leave_out, leaveout_label, classifier, use_gpu, knn_metric)
+            create_umap(dataset, 
+                        features_path, 
+                        df_path, 
+                        dest_dir, 
+                        ['Label', umap_label])
+            
+        results = evaluate(features_path, 
+                           df_path, 
+                           leave_out, 
+                           leaveout_label, 
+                           classifier, 
+                           use_gpu, 
+                           knn_metric)
 
         # Print the full results
         print('Results:')
@@ -59,7 +74,7 @@ def run_benchmark(root_dir, dest_dir, feature_dir, feature_file, classifier='knn
             print(results["reports_str"][task_ind])
         
         # Save results as dictionary
-        save_results(results, dest_dir, dataset, classifier)
+        save_results(results, dest_dir, dataset, classifier, knn_metric)
         
         # Save results as csv
         result_temp = pd.DataFrame({'dataset': [dataset for i in range(len(results["tasks"]))],\
