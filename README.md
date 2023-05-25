@@ -4,9 +4,14 @@ MorphEm_70k v2.0 is ready to download at [here](https://caicedolab.s3.us-west-2.
 
 ## Install
 
-Install the `morphem` package by running
+Install the `morphem` package by running (once the repo is public, doesn't work for now)
 ```
 pip install git+git@github.com:broadinstitute/MorphEm.git#egg=morphem
+```
+
+Currently, install the package by running within the repo folder
+```
+pip install -e .
 ```
 Alternatively, run the evaluation pipeline through command line script in the `notebook` folder.
 
