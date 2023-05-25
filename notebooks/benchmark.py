@@ -11,9 +11,9 @@ warnings.filterwarnings("ignore")
 def get_args_parser():
     """
     Example:
-        python run_benchmark.py --root_dir "../datasets/morphem_70k_2.0" --dest_dir "../results" \
-                            --feature_dir "../datasets/morphem_70k_2.0/features" \
-                            --feature_file "pretrained_resnet18_features.npy" \
+        python benchmark.py --root_dir "../../datasets/morphem_70k_2.0" --dest_dir "../results/convnext" \
+                            --feature_dir "../../datasets/morphem_70k_2.0/features" \
+                            --feature_file "pretrained_convnext_channel_replicate.npy" \
                             --use_gpu \
                             --classifier "knn" \
                             --umap
@@ -21,19 +21,24 @@ def get_args_parser():
 
     parser = argparse.ArgumentParser('MorphEm-benchmarking', add_help=False)
 
-    parser.add_argument('--root_dir', default="../datasets/morphem_70k_2.0", type=str,
+    parser.add_argument('--root_dir', default="../../datasets/morphem_70k_2.0", type=str,
                         help='Path to data directory')
-    parser.add_argument('--dest_dir', default="../results", type=str,
+    parser.add_argument('--dest_dir', default="../../results", type=str,
                         help='Path to save results')
-    parser.add_argument('--feature_dir', default='../datasets/morphem_70k_2.0/features', type=str,
+    parser.add_argument('--feature_dir', default='../../datasets/morphem_70k_2.0/features', type=str,
                         help='Directory of features')
     parser.add_argument('--feature_file', default='pretrained_resnet18_features.npy', type=str,
                         help='Filename of features')
 
     # Training parameters
-    parser.add_argument('--use_gpu', default=False, action='store_true', help='Use GPU to run classifier')
-    parser.add_argument('--classifier', default='knn', type=str, choices=['knn', 'sgd'], help='Classifier to use')
-    parser.add_argument('--umap', default=False, action='store_true', help='Create umap for features')
+    parser.add_argument('--use_gpu', default=False, action='store_true', 
+                        help='Use GPU to run classifier')
+    parser.add_argument('--classifier', default='knn', type=str, choices=['knn', 'sgd'], 
+                        help='Classifier to use')
+    parser.add_argument('--umap', default=False, action='store_true', 
+                        help='Create umap for features')
+    parser.add_argument('--knn_metric', default='l2', type=str, choices=['l2', 'cosine'], 
+                        help='Metric of KNN')
     return parser
 
 
@@ -65,6 +70,7 @@ def main(args):
     feature_file = args.feature_file
     use_gpu = args.use_gpu
     umap = args.umap
+    knn_metric = args.knn_metric
 
     # encode dataset, task, and classifier
     task_dict = pd.DataFrame({'dataset': ['Allen', 'HPA', 'CP'],
@@ -90,7 +96,14 @@ def main(args):
         # Create umap and run classification
         if umap:
             evaluation.create_umap(dataset, features_path, df_path, dest_dir, ['Label', umap_label])
-        results = evaluation.evaluate(features_path, df_path, leave_out, leaveout_label, classifier)
+            
+        results = evaluation.evaluate(features_path, 
+                                      df_path, 
+                                      leave_out, 
+                                      leaveout_label, 
+                                      classifier, 
+                                      use_gpu=use_gpu, 
+                                      knn_metric=knn_metric)
 
         # Print the full results
         print('Results:')
@@ -109,8 +122,12 @@ def main(args):
                                     'f1_score_macro': results["f1scores_macro"]})
 
         full_result_df = pd.concat([full_result_df, result_temp]).reset_index(drop=True)
-
-    out_path = f'{dest_dir}/{classifier}_full_results.csv'
+        
+    if classifier == 'knn':
+        out_path = f'{dest_dir}/{classifier}_{knn_metric}_full_results.csv'
+    else:
+        out_path = f'{dest_dir}/{classifier}_full_results.csv'
+        
     full_result_df.to_csv(out_path, index=False)
     print("wrote full results to ", out_path)
 

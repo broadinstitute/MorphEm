@@ -1,16 +1,16 @@
 ## Install
 
-Install the `evaluate_pipeline` package by running
+Install the `morphem` package by running
 ```
-pip install git+git@github.com:broadinstitute/MorphEm.git#egg=evaluate_pipeline
+pip install git+git@github.com:broadinstitute/MorphEm.git#egg=morphem
 ```
 
 ## Run Evaluation
-Run the evaluation pipeline by importing the `run_benchmark` function from `run_benchmark.py` and passing required fields to the function.
+Run the evaluation pipeline by importing the `run_benchmark` function from `benchmark.py` and passing required fields to the function.
 Example of using the package from command line:
 ```
-python -c "from evaluate_pipeline.run_benchmark import run_benchmark; 
-run_benchmark('datasets/morphem_70k_2.0', 'results_delete', 
+python -c "from morphem.benchmark import run_benchmark; 
+run_benchmark('datasets/morphem_70k_2.0', 'results', 
 'datasets/morphem_70k_2.0/features', 'pretrained_resnet18_features.npy')"
 ```
 The function requires the following input parameters:  
@@ -21,5 +21,7 @@ The function requires the following input parameters:
 `feature_file` : filename of features.  
 
 Optional field include:  
-`classifier `: Default is 'knn'. Choose from 'knn' and 'sgd'.  
-`umap` : whether or not to produce UMAP for features. Default is False.
+
+`classifier` : Default is 'knn'. Choose from 'knn' and 'sgd'.  
+`umap` : Default is False. Whether or not to produce UMAP for features. 
+`knn_metric` : Default is 'l2'. Choose from 'cosine' and 'l2'.
