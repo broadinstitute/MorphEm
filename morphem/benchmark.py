@@ -86,3 +86,5 @@ def run_benchmark(root_dir, dest_dir, feature_dir, feature_file, classifier='knn
         full_result_df.to_csv(f'{dest_dir}/{classifier}_{knn_metric}_full_results.csv', index=False) 
     else:
         full_result_df.to_csv(f'{dest_dir}/{classifier}_full_results.csv', index=False)
+        
+    return full_result_df

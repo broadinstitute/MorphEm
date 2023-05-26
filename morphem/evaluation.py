@@ -111,9 +111,13 @@ def evaluate(features_path, df_path, leave_out, leaveout_label, model_choice, us
     # Count number of tasks
     tasks = list(df['train_test_split'].unique())
     tasks.remove('Train')
+    
+    # Sort task from 1->4 for consistency when displaying results
+    mapper = {"Task_one": 1, "Task_two": 2, "Task_three": 3, "Task_four": 4}
+    tasks = sorted(tasks, key=lambda x: mapper[x])
+    
     if leave_out != None:
         leaveout_ind = tasks.index(leave_out)
-
 
     # Get index for training and each testing set
     train_indices = np.where(df['train_test_split'] == 'Train')[0]
