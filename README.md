@@ -1,15 +1,10 @@
-# MorphEm
+# CHAMMI
 
-MorphEm_70k v2.0 is ready to download at [here](https://caicedolab.s3.us-west-2.amazonaws.com/MorphEm/morphem_70k_2.0.zip).
-
+The CHAMMI dataset is available for download at [here](https://zenodo.org/record/7988357).
+The code we used for training and evaluating models are publicly available at [here](https://github.com/chaudatascience/channel_adaptive_models).
 ## Install
 
-Install the `morphem` package by running (once the repo is public, doesn't work for now)
-```
-pip install git+git@github.com:broadinstitute/MorphEm.git#egg=morphem
-```
-
-Currently, install the package by running within the repo folder
+Install the `morphem` package by running within the repo folder
 ```
 pip install -e .
 ```
@@ -21,8 +16,8 @@ Importing the `run_benchmark` function from `benchmark.py` and passing required 
 Example of using the package from command line:
 ```
 python -c "from morphem.benchmark import run_benchmark; 
-run_benchmark('datasets/morphem_70k_2.0', 'results', 
-'datasets/morphem_70k_2.0/features', 'pretrained_resnet18_features.npy')"
+run_benchmark('datasets/CHAMMI', 'results', 
+'datasets/CHAMMI/features', 'pretrained_resnet18_features.npy')"
 ```
 The function requires the following input parameters:  
 
