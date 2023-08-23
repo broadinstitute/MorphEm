@@ -35,4 +35,4 @@ Optional field include:
 `knn_metric` : Default is 'l2'. Choose from 'cosine' and 'l2'.
 
 ## Example Images from each Dataset with Labels
-![alt text](https://github.com/broadinstitute/MorphEm/blob/rebuttal_update/example_image.png)
+![alt text](https://github.com/broadinstitute/MorphEm/blob/main/example_image.png)
