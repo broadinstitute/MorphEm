@@ -1,7 +1,9 @@
 # CHAMMI
 
-The CHAMMI dataset is available for download at [here](https://zenodo.org/record/7988357).
-The code we used for training and evaluating models are publicly available at [here](https://github.com/chaudatascience/channel_adaptive_models).
+The CHAMMI dataset is available for download on [Zenado](https://zenodo.org/record/7988357).
+
+We released model checkpoints and the training scripts to further aid reproducibility. 
+Our code and checkpoints are now publicly available at [here](https://github.com/chaudatascience/channel_adaptive_models).
 ## Install
 
 Install the `morphem` package by running within the repo folder
@@ -32,3 +34,5 @@ Optional field include:
 `umap` : Default is False. Whether or not to produce UMAP for features. 
 `knn_metric` : Default is 'l2'. Choose from 'cosine' and 'l2'.
 
+## Example Images from each Dataset with Labels
+![alt text](https://github.com/broadinstitute/MorphEm/blob/rebuttal_update/example_image.png)
