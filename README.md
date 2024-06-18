@@ -4,6 +4,14 @@ The CHAMMI dataset is available for download on [Zenado](https://zenodo.org/reco
 
 We released model checkpoints and the training scripts to further aid reproducibility. 
 Our code and checkpoints are now publicly available at [here](https://github.com/chaudatascience/channel_adaptive_models).
+## Checking and installing correct python version
+
+Check python version by running `python --version`
+
+If your python version is not 3.8 or 3.9, install python with
+`conda install python=3.8` or `conda install python=3.9`
+
+
 ## Install
 
 Install the `morphem` package by running within the repo folder
@@ -11,6 +19,9 @@ Install the `morphem` package by running within the repo folder
 pip install -e .
 ```
 Alternatively, run the evaluation pipeline through command line script in the `notebook` folder.
+
+Next, install faiss-gpu version 1.7.3 with the command `conda install -c pytorch faiss-gpu==1.7.3`
+
 
 ## Run Evaluation 
 

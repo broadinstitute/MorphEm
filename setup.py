@@ -12,9 +12,9 @@ setup(
 
     py_modules=find_packages(),
     install_requires=[
-    'faiss-gpu==1.7.2',
+    #'faiss-gpu==1.7.2',
     'matplotlib==3.5.3',
-    'numpy==1.21.5',
+    'numpy==1.22.0',
     'pandas==1.5.1',
     'scikit_image==0.19.2',
     'scikit_learn==1.2.2',
