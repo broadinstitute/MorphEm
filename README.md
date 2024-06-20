@@ -4,12 +4,19 @@ The CHAMMI dataset is available for download on [Zenado](https://zenodo.org/reco
 
 We released model checkpoints and the training scripts to further aid reproducibility. 
 Our code and checkpoints are now publicly available at [here](https://github.com/chaudatascience/channel_adaptive_models).
+
 ## Checking and installing correct python version
 
 Check python version by running `python --version`
 
 If your python version is not 3.8 or 3.9, install python with
 `conda install python=3.8` or `conda install python=3.9`
+
+### Notice
+
+If you choose to install version 3.8, be aware that there will be some warning messages that will
+display after running the code from the "Run Evaluation" section below. To avoid these warning
+messages, install python version 3.9
 
 
 ## Install
