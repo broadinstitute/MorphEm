@@ -19,7 +19,6 @@ setup(
     'scikit_image==0.19.2',
     'scikit_learn==1.2.2',
     'seaborn==0.12.2',
-    'scikit_learn==1.2.2',
     'torch==2.0.0',
     'torchvision==0.15.1',
     'umap_learn==0.5.3'
