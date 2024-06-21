@@ -5,52 +5,44 @@ The CHAMMI dataset is available for download on [Zenado](https://zenodo.org/reco
 We released model checkpoints and the training scripts to further aid reproducibility. 
 Our code and checkpoints are now publicly available at [here](https://github.com/chaudatascience/channel_adaptive_models).
 
-## Disclosure
 
-These instructions are made for conda environments, but the `requirements.txt` file is given for other users
+### Note
 
-### Notice
+**These instructions are made for conda environments, but the `requirements.txt` file is given for other users.**
 
-We also use 'pip' commands since both 'pip' and 'conda' are generally compatible and can be used in one 
-environment 
+**We also use 'pip' commands since both 'pip' and 'conda' are generally compatible and can be used in one 
+environment.**
 
 
-## Checking and installing correct python version
+## Checking and installing the correct python version
 
 Check python version by running
 ```
 python --version
 ```
 
-If your python version is not 3.8 or 3.9, install python with
-`conda install python=3.8` or `conda install python=3.9`
-
-### Recommended Version:
-
+We used python versions 3.8 and 3.9 to test the code, but we recommend using version 3.9
 ```
 conda install python=3.9
 ```
 
-#### Notice
-
-If you choose to install version 3.8, be aware that there will be some warning messages that will
-display after running the code from the "Run Evaluation" section below. To avoid these warning
-messages, install python version 3.9
+**If you choose to install version 3.8, be aware that there will be some warning messages that will 
+display after running the code from the "Run Evaluation" section below.**
 
 
 ## Install
 
-Install the `morphem` package by running within the repo folder
+Install the `morphem` package by running within the repo folder:
 ```
 pip install -e .
 ```
 
-Next, install faiss-gpu version 1.7.3 with this command
+Next, install faiss-gpu version 1.7.3 with this command:
 ```
 conda install -c pytorch faiss-gpu==1.7.3
 ```
 
-We use conda because faiss-gpu cannot be installed using pip
+We use conda because faiss-gpu cannot be installed using pip.
 
 
 ## Run Evaluation 
@@ -69,10 +61,8 @@ The function requires the following input parameters:
 `feature_dir` : directory where features are stored.  
 `feature_file` : filename of features.
 
-### Notice
-
-Make sure to put the complete directory for `root_dir`, `dest_dir`, and `feature_dir` in order
-for the code to run
+**Make sure to put the complete directory for **`root_dir`, `dest_dir`,** and **`feature_dir`** in order
+for the code to run**
 
 
 Optional field include:  
