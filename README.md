@@ -1,6 +1,6 @@
 # CHAMMI
 
-The CHAMMI dataset is available for download on [Zenado](https://zenodo.org/record/7988357).
+The CHAMMI dataset is available for download on [Zenodo](https://zenodo.org/record/7988357).
 
 We released model checkpoints and the training scripts to further aid reproducibility. 
 Our code and checkpoints are now publicly available at [here](https://github.com/chaudatascience/channel_adaptive_models).
@@ -14,6 +14,12 @@ These instructions are made for conda environments, but the `requirements.txt` f
 We also use 'pip' commands since both 'pip' and 'conda' are generally compatible and can be used in one 
 environment 
 
+
+## Do Before Running Code
+
+Download the dataset/images by clicking the Zenodo link above (downloading the dataset takes around 2 hours 
+so do this as soon as possible).
+Then, run the "Feature Extraction" notebook located in the `notebooks` section to obtain the features
 
 ## Checking and installing correct python version
 
