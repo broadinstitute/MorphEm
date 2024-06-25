@@ -4,13 +4,46 @@ The CHAMMI dataset is available for download on [Zenado](https://zenodo.org/reco
 
 We released model checkpoints and the training scripts to further aid reproducibility. 
 Our code and checkpoints are now publicly available at [here](https://github.com/chaudatascience/channel_adaptive_models).
+
+
+### Note
+
+**These instructions are made for conda environments, but the `requirements.txt` file is given for other users.**
+
+**We also use 'pip' commands since both 'pip' and 'conda' are generally compatible and can be used in one 
+environment.**
+
+
+## Checking and installing the correct python version
+
+Check python version by running
+```
+python --version
+```
+
+We used python versions 3.8 and 3.9 to test the code, but we recommend using version 3.9
+```
+conda install python=3.9
+```
+
+**If you choose to install version 3.8, be aware that there will be some warning messages that will 
+display after running the code from the "Run Evaluation" section below.**
+
+
 ## Install
 
-Install the `morphem` package by running within the repo folder
+Install the `morphem` package by running within the repo folder:
 ```
 pip install -e .
 ```
-Alternatively, run the evaluation pipeline through command line script in the `notebook` folder.
+
+Next, install faiss-gpu version 1.7.3 with this command:
+```
+conda install -c pytorch faiss-gpu==1.7.3
+```
+
+We use conda because faiss-gpu cannot be installed using pip.
+
 
 ## Run Evaluation 
 
@@ -26,7 +59,11 @@ The function requires the following input parameters:
 `root_dir` : path to data directory.  
 `dest_dir` : directory to store results.  
 `feature_dir` : directory where features are stored.  
-`feature_file` : filename of features.  
+`feature_file` : filename of features.
+
+**Make sure to put the complete directory for **`root_dir`, `dest_dir`,** and **`feature_dir`** in order
+for the code to run**
+
 
 Optional field include:  
 
