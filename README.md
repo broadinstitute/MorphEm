@@ -45,6 +45,13 @@ conda install -c pytorch faiss-gpu==1.7.3
 We use conda because faiss-gpu cannot be installed using pip.
 
 
+## Getting Features
+
+Run the "Feature_Extraction.ipynb" notebook located in the `notebooks` section.
+Make sure to put the correct paths for `root_dir` and `feature_dir` in order to store the features
+in your personal directories and avoid future issues.
+
+
 ## Run Evaluation 
 
 Importing the `run_benchmark` function from `benchmark.py` and passing required fields to the function.
