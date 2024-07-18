@@ -27,7 +27,6 @@ import argparse
 import folded_dataset
 # reload(folded_dataset)
 
-
 # In[ ]:
 
 
@@ -63,7 +62,7 @@ def configure_dataset(root_dir, dataset_name):
 
 class ConvNextClass():
     def convnext_model():
-        device = torch.device(f"cuda:7" if torch.cuda.is_available() else "cpu")
+        device = torch.device(f"cuda:0" if torch.cuda.is_available() else "cpu")
 
 
         # In[ ]:
@@ -117,7 +116,7 @@ class ConvNextClass():
 
 class ResNetClass():
     def resnet_model():
-        device = torch.device(f"cuda:7" if torch.cuda.is_available() else "cpu")
+        device = torch.device(f"cuda:1" if torch.cuda.is_available() else "cpu")
 
 
         # In[ ]:
@@ -188,10 +187,10 @@ def get_save_features(feature_dir, feature_file, root_dir, model_check):
 # args = parser.parse_args()
 
 if __name__ == '__main__':
-    root_dir = '/scr/nnair/dataset/' # use only two images in a tiny directory with 2 images from each dataset (create directory called tiny_CHAMMI)
-    feature_dir = '/scr/nnair/sample_dataset' # use same structure as original directory (again a tiny directory for the features for the two images from each dataset)
-    feature_file = 'pretrained_resnet18_features.npy'
-    model_check = "resnet"
+    root_dir = '/scr/nnair/tiny_dataset/' # use only two images in a tiny directory with 2 images from each dataset (create directory called tiny_CHAMMI)
+    feature_dir = '/scr/nnair/tiny_features' # use same structure as original directory (again a tiny directory for the features for the two images from each dataset)
+    feature_file = 'pretrained_convnext_channel_replicate.npy'
+    model_check = "convnext"
 
     get_save_features(feature_dir, feature_file, root_dir, model_check)
 
