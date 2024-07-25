@@ -61,9 +61,8 @@ def configure_dataset(root_dir, dataset_name):
 # In[ ]:
 
 class ConvNextClass():
-    def convnext_model():
-        device = torch.device(f"cuda:0" if torch.cuda.is_available() else "cpu")
-
+    def convnext_model(gpu):
+        device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
 
         # In[ ]:
 
@@ -89,12 +88,12 @@ class ConvNextClass():
 
         model_check = "convnext"
         # get_save_features(model, feature_dir, feature_file, root_dir, model_check)
-        return feature_extractor, device
+        return feature_extractor, device, feature_file
 
 
-    def forward(x: torch.Tensor) -> torch.Tensor:
+    def forward(x: torch.Tensor, gpu: int) -> torch.Tensor:
         # pooling = 'avg'
-        feature_extractor, _ = ConvNextClass.convnext_model()
+        feature_extractor, _, _ = ConvNextClass.convnext_model(gpu)
         x = feature_extractor(x)
         # if pooling == 'avg':
         x = F.adaptive_avg_pool2d(x, (1, 1))
@@ -115,9 +114,8 @@ class ConvNextClass():
 
 
 class ResNetClass():
-    def resnet_model():
-        device = torch.device(f"cuda:1" if torch.cuda.is_available() else "cpu")
-
+    def resnet_model(gpu):
+        device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
 
         # In[ ]:
 
@@ -135,20 +133,20 @@ class ResNetClass():
         model_check = "resnet"
         #get_save_features(m, feature_dir, feature_file, root_dir, model_check)
 
-        return weights, feature_extractor, device
+        return weights, feature_extractor, device, feature_file
 
 
 
-def get_save_features(feature_dir, feature_file, root_dir, model_check):
+def get_save_features(feature_dir, root_dir, model_check, gpu):
     dataset_names = ['CP','Allen','HPA']
     for dataset_name in dataset_names:
         dataset = configure_dataset(root_dir, dataset_name)
         train_dataloader = DataLoader(dataset, batch_size=256, shuffle=False)
         if model_check == "resnet":
-            weights, feature_extractor, device = ResNetClass.resnet_model()
+            weights, feature_extractor, device, feature_file = ResNetClass.resnet_model(gpu)
             preprocess = weights.transforms()
         else:
-            _, device = ConvNextClass.convnext_model()
+            _, device, feature_file = ConvNextClass.convnext_model(gpu)
         all_feat = []
         for images, label in tqdm(train_dataloader, total=len(train_dataloader)):
             cloned_images = images.clone()
@@ -163,7 +161,7 @@ def get_save_features(feature_dir, feature_file, root_dir, model_check):
                     expanded = preprocess(expanded).to(device)
                     feat_temp = feature_extractor(expanded).cpu().detach().numpy()
                 else: 
-                    feat_temp = ConvNextClass.forward(expanded).cpu().detach().numpy()
+                    feat_temp = ConvNextClass.forward(expanded, gpu).cpu().detach().numpy()
                     
                 batch_feat.append(feat_temp)
                 
@@ -176,23 +174,33 @@ def get_save_features(feature_dir, feature_file, root_dir, model_check):
         np.save(feature_path, all_feat)
 
 
-
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument("root_dir", help="the root directory of the original images")
-# parser.add_argument("feat_dir", help="the directory that contains the features")
-# parser.add_argument("model", help="the type of model that is being trained and evaluated (convnext or resnet)")
-# parser.add_argument("gpu", help="the gpu that is currently available/not in use", type=int)
-
-# args = parser.parse_args()
+def get_parser():
+   
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root_dir", help="The root directory of the original images", type=str, required=True)
+    parser.add_argument("--feat_dir", help="The directory that contains the features", type=str, required=True)
+    parser.add_argument("--model", help="The type of model that is being trained and evaluated (convnext or resnet)", type=str, required=True, choices=['convnext', 'resnet'])
+    parser.add_argument("--gpu", help="The gpu that is currently available/not in use", type=int, required=True)
+    
+    return parser
 
 if __name__ == '__main__':
-    root_dir = '/scr/nnair/tiny_dataset/' # use only two images in a tiny directory with 2 images from each dataset (create directory called tiny_CHAMMI)
-    feature_dir = '/scr/nnair/tiny_features' # use same structure as original directory (again a tiny directory for the features for the two images from each dataset)
-    feature_file = 'pretrained_convnext_channel_replicate.npy'
-    model_check = "convnext"
+    # root_dir = '/scr/nnair/tiny_dataset/' # use only two images in a tiny directory with 2 images from each dataset (create directory called tiny_CHAMMI)
+    # feature_dir = '/scr/nnair/tiny_features' # use same structure as original directory (again a tiny directory for the features for the two images from each dataset)
+    # feature_file = 'pretrained_convnext_channel_replicate.npy'
+    # model_check = "convnext"
 
-    get_save_features(feature_dir, feature_file, root_dir, model_check)
+    # get_save_features(feature_dir, feature_file, root_dir, model_check)
+
+    parser = get_parser()
+    args = parser.parse_args()
+
+    root_dir = args.root_dir
+    feat_dir = args.feat_dir
+    model = args.model
+    gpu = args.gpu
+
+    get_save_features(feat_dir, root_dir, model, gpu)
 
     # print("Features are all obtained and saved!")
 
