@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import torch
 from torch.utils.data import DataLoader
 from torch import nn
@@ -27,28 +21,6 @@ import argparse
 import folded_dataset
 # reload(folded_dataset)
 
-# In[ ]:
-
-
-#pip install --upgrade pip
-
-
-# In[ ]:
-
-
-#pip install timm
-
-
-# In[ ]:
-
-
-# make sure to add your own directory for data directory (i.e. root directory) and feature directory
-
-
-
-
-# In[ ]:
-
 
 def configure_dataset(root_dir, dataset_name):
     df_path = f'{root_dir}/{dataset_name}/enriched_meta.csv'
@@ -58,21 +30,14 @@ def configure_dataset(root_dir, dataset_name):
     return dataset
 
 
-# In[ ]:
 
 class ConvNextClass():
     def convnext_model(gpu):
         device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
 
-        # In[ ]:
-
-
+      
         feature_file = 'pretrained_convnext_channel_replicate.npy'
-        # pooling = 'avg'
-
-
-        # In[ ]:
-
+     
 
         pretrained = True
         model = create_model("convnext_tiny.fb_in22k", pretrained=pretrained).to(device)
@@ -87,29 +52,14 @@ class ConvNextClass():
                         )
 
         model_check = "convnext"
-        # get_save_features(model, feature_dir, feature_file, root_dir, model_check)
         return feature_extractor, device, feature_file
 
 
     def forward(x: torch.Tensor, gpu: int) -> torch.Tensor:
-        # pooling = 'avg'
-        feature_extractor, _, _ = ConvNextClass.convnext_model(gpu)
+        feature_extractor, _,  = ConvNextClass.convnext_model(gpu)
         x = feature_extractor(x)
-        # if pooling == 'avg':
         x = F.adaptive_avg_pool2d(x, (1, 1))
-        # elif pooling == 'max':
-        #     x = F.adaptive_max_pool2d(x, (1, 1))
-        # elif pooling == 'avg_max':
-        #     x_avg = F.adaptive_avg_pool2d(x, (1, 1))
-        #     x_max = F.adaptive_max_pool2d(x, (1, 1))
-        #     x = torch.cat([x_avg, x_max], dim=1)
-        # elif pooling == None:
-        #     pass
-        # else:
-        #     raise ValueError(
-        #         f"Pooling {self.cfg.pooling} not supported. Use one of {FeaturePooling.list()}"
-        #     )
-        # x = rearrange(x, "b c h w -> b (c h w)")
+      
         return x
 
 
@@ -117,13 +67,8 @@ class ResNetClass():
     def resnet_model(gpu):
         device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
 
-        # In[ ]:
-
 
         feature_file = 'pretrained_resnet18_features.npy'
-
-
-        # In[ ]:
 
 
         weights = ResNet18_Weights.IMAGENET1K_V1
@@ -131,7 +76,6 @@ class ResNetClass():
         feature_extractor = torch.nn.Sequential(*list(m.children())[:-1]).to(device)
 
         model_check = "resnet"
-        #get_save_features(m, feature_dir, feature_file, root_dir, model_check)
 
         return weights, feature_extractor, device, feature_file
 
@@ -185,12 +129,6 @@ def get_parser():
     return parser
 
 if __name__ == '__main__':
-    # root_dir = '/scr/nnair/tiny_dataset/' # use only two images in a tiny directory with 2 images from each dataset (create directory called tiny_CHAMMI)
-    # feature_dir = '/scr/nnair/tiny_features' # use same structure as original directory (again a tiny directory for the features for the two images from each dataset)
-    # feature_file = 'pretrained_convnext_channel_replicate.npy'
-    # model_check = "convnext"
-
-    # get_save_features(feature_dir, feature_file, root_dir, model_check)
 
     parser = get_parser()
     args = parser.parse_args()
@@ -202,10 +140,3 @@ if __name__ == '__main__':
 
     get_save_features(feat_dir, root_dir, model, gpu)
 
-    # print("Features are all obtained and saved!")
-
-    # Maybe feature_file might not need to be an argument since the feature_file is assigned in the respective classes
-        # By doing this, this avoids the problem of mismatching models and feature file names (i.e. model is resnet, but feature_file is 
-        # 'pretrained_convnext_channel_replicate.npy') 
-            # this is just a suggestion, otherwise we could remove the feature_file variable being assigned in the classes and have it 
-            # as an argument (for argparse)

@@ -47,15 +47,16 @@ We use conda because faiss-gpu cannot be installed using pip.
 
 ## Getting Features
 
-<!-- Run the "Feature_Extraction.ipynb" notebook located in the `notebooks` section.
-Make sure to put the correct paths for `root_dir` and `feature_dir` in order to store the features
-in your personal directories and avoid future issues. -->
-
 Run the "Feature_Extraction.py" file located in the `morphem` directory with the appropriate arguments. Before running the code, make sure to run
 ```
 nvidia-smi
 ```
-to check which gpu is available/"more free". Put that gpu number in that corresponding argument's place when running the Feature_Extraction.py file
+to check which gpu is available/"more free". Put that gpu number in that corresponding argument's place when running the "Feature_Extraction.py" file (the gpu number is the last argument te be passed).
+
+### Note
+
+Make sure to be inside the `morphem` directory when running the "Feature_Extraction.py" file.
+
 
 ## Run Evaluation 
 
