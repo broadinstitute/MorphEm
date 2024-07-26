@@ -51,7 +51,7 @@ Run the "Feature_Extraction.py" file located in the `morphem` directory with the
 ```
 nvidia-smi
 ```
-to check which gpu is available/"more free". Put that gpu number in that corresponding argument's place when running the "Feature_Extraction.py" file (the gpu number is the last argument te be passed).
+to check which gpu is available/"more free". Put that gpu number in that corresponding argument's place when running the "Feature_Extraction.py" file (the gpu number is the last argument to be passed).
 
 ### Note
 
