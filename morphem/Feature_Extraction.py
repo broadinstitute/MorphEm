@@ -32,15 +32,14 @@ def configure_dataset(root_dir, dataset_name):
 
 
 class ConvNextClass():
-    def convnext_model(gpu):
-        device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
+    def __init__(self, gpu):
+        self.device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
+        self.feature_extractor = self.init_model()
 
-      
-        feature_file = 'pretrained_convnext_channel_replicate.npy'
-     
+    def init_model(self):
 
         pretrained = True
-        model = create_model("convnext_tiny.fb_in22k", pretrained=pretrained).to(device)
+        model = create_model("convnext_tiny.fb_in22k", pretrained=pretrained).to(self.device)
         feature_extractor = nn.Sequential(
                             model.stem,
                             model.stages[0],
@@ -51,17 +50,22 @@ class ConvNextClass():
                             *[model.stages[3].blocks[i] for i in range(3)],
                         )
 
-        model_check = "convnext"
-        return feature_extractor, device, feature_file
+        # model_check = "convnext"
+        return feature_extractor
 
 
-    def forward(x: torch.Tensor, gpu: int) -> torch.Tensor:
-        feature_extractor, _,  = ConvNextClass.convnext_model(gpu)
-        x = feature_extractor(x)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # feature_extractor, _, _ = ConvNextClass.convnext_model(gpu)
+        x = self.feature_extractor(x)
         x = F.adaptive_avg_pool2d(x, (1, 1))
       
         return x
 
+    def convnext_model(gpu):
+        instance = ConvNextClass(gpu)
+        feature_file = 'pretrained_convnext_channel_replicate.npy'
+
+        return instance.feature_extractor, instance.device, feature_file
 
 class ResNetClass():
     def resnet_model(gpu):
@@ -75,7 +79,7 @@ class ResNetClass():
         m = resnet18(weights=weights).to(device)
         feature_extractor = torch.nn.Sequential(*list(m.children())[:-1]).to(device)
 
-        model_check = "resnet"
+        # model_check = "resnet"
 
         return weights, feature_extractor, device, feature_file
 
@@ -83,14 +87,20 @@ class ResNetClass():
 
 def get_save_features(feature_dir, root_dir, model_check, gpu):
     dataset_names = ['CP','Allen','HPA']
+    
+    if model_check == "resnet":
+            weights, feature_extractor, device, feature_file = ResNetClass.resnet_model(gpu)
+            preprocess = weights.transforms()
+    else:
+        feature_extractor, device, feature_file = ConvNextClass.convnext_model(gpu)
+        preprocess = None
+
+        convnext_instance = ConvNextClass(gpu)
+        
     for dataset_name in dataset_names:
         dataset = configure_dataset(root_dir, dataset_name)
         train_dataloader = DataLoader(dataset, batch_size=256, shuffle=False)
-        if model_check == "resnet":
-            weights, feature_extractor, device, feature_file = ResNetClass.resnet_model(gpu)
-            preprocess = weights.transforms()
-        else:
-            _, device, feature_file = ConvNextClass.convnext_model(gpu)
+        
         all_feat = []
         for images, label in tqdm(train_dataloader, total=len(train_dataloader)):
             cloned_images = images.clone()
@@ -105,8 +115,8 @@ def get_save_features(feature_dir, root_dir, model_check, gpu):
                     expanded = preprocess(expanded).to(device)
                     feat_temp = feature_extractor(expanded).cpu().detach().numpy()
                 else: 
-                    feat_temp = ConvNextClass.forward(expanded, gpu).cpu().detach().numpy()
-                    
+                    feat_temp = convnext_instance.forward(expanded).cpu().detach().numpy()
+
                 batch_feat.append(feat_temp)
                 
             batch_feat = np.concatenate(batch_feat, axis=1)
