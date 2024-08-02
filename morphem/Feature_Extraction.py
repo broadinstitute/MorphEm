@@ -32,14 +32,17 @@ def configure_dataset(root_dir, dataset_name):
 
 
 class ConvNextClass():
-    def __init__(self, gpu):
-        self.device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
-        self.feature_extractor = self.init_model()
+    def convnext_model():
+        device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
+        # self.feature_extractor = self.init_model()
 
-    def init_model(self):
+        # device can be removed
+        # init and init_model can be combined into one method
+
+    # def init_model(self):
 
         pretrained = True
-        model = create_model("convnext_tiny.fb_in22k", pretrained=pretrained).to(self.device)
+        model = create_model("convnext_tiny.fb_in22k", pretrained=pretrained).to(device)
         feature_extractor = nn.Sequential(
                             model.stem,
                             model.stages[0],
@@ -61,18 +64,20 @@ class ConvNextClass():
       
         return x
 
-    def convnext_model(gpu):
-        instance = ConvNextClass(gpu)
-        feature_file = 'pretrained_convnext_channel_replicate.npy'
+    # def convnext_model():
+    #     instance = ConvNextClass()
+    #     # feature_file = 'pretrained_convnext_channel_replicate.npy'
 
-        return instance.feature_extractor, instance.device, feature_file
+    #     return instance.feature_extractor
 
 class ResNetClass():
-    def resnet_model(gpu):
+    def resnet_model():
         device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
 
+        # device is not needed in class since both models can use the same gpu (models are not used simultaneously)
 
-        feature_file = 'pretrained_resnet18_features.npy'
+
+        # feature_file = 'pretrained_resnet18_features.npy'
 
 
         weights = ResNet18_Weights.IMAGENET1K_V1
@@ -81,25 +86,34 @@ class ResNetClass():
 
         # model_check = "resnet"
 
-        return weights, feature_extractor, device, feature_file
+        return weights, feature_extractor
 
 
 
 def get_save_features(feature_dir, root_dir, model_check, gpu):
     dataset_names = ['CP','Allen','HPA']
+    device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
     
     if model_check == "resnet":
-            weights, feature_extractor, device, feature_file = ResNetClass.resnet_model(gpu)
-            preprocess = weights.transforms()
-    else:
-        feature_extractor, device, feature_file = ConvNextClass.convnext_model(gpu)
-        preprocess = None
+        weights, feature_extractor = ResNetClass.resnet_model()
+        preprocess = weights.transforms()
+        feature_file = 'pretrained_resnet18_features.npy'
+        # add feature file here and remove from class
 
-        convnext_instance = ConvNextClass(gpu)
+        
+    else:
+        #feature_extractor, device, feature_file = ConvNextClass.convnext_model(gpu)
+        #preprocess = None
+
+        # add feature file here and remove from class
+        
+        feature_extractor = ConvNextClass.convnext_model() # reduce redudancy
+        feature_file = 'pretrained_convnext_channel_replicate.npy'
+        
         
     for dataset_name in dataset_names:
         dataset = configure_dataset(root_dir, dataset_name)
-        train_dataloader = DataLoader(dataset, batch_size=256, shuffle=False)
+        train_dataloader = DataLoader(dataset, batch_size=256, shuffle=False) #reduce batch size to 128
         
         all_feat = []
         for images, label in tqdm(train_dataloader, total=len(train_dataloader)):
@@ -115,7 +129,7 @@ def get_save_features(feature_dir, root_dir, model_check, gpu):
                     expanded = preprocess(expanded).to(device)
                     feat_temp = feature_extractor(expanded).cpu().detach().numpy()
                 else: 
-                    feat_temp = convnext_instance.forward(expanded).cpu().detach().numpy()
+                    feat_temp = feature_extractor.forward(expanded).cpu().detach().numpy()
 
                 batch_feat.append(feat_temp)
                 
