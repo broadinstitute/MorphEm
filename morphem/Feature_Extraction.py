@@ -31,19 +31,15 @@ def configure_dataset(root_dir, dataset_name):
 
 
 
+
+
 class ConvNextClass():
-    def convnext_model(gpu):
-        device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
-        # self.feature_extractor = self.init_model()
-
-        # device can be removed
-        # init and init_model can be combined into one method
-
-    # def init_model(self):
-
+    def __init__(self, gpu):
+        self.device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
+       
         pretrained = True
-        model = create_model("convnext_tiny.fb_in22k", pretrained=pretrained).to(device)
-        feature_extractor = nn.Sequential(
+        model = create_model("convnext_tiny.fb_in22k", pretrained=pretrained).to(self.device)
+        self.feature_extractor = nn.Sequential(
                             model.stem,
                             model.stages[0],
                             model.stages[1],
@@ -51,12 +47,10 @@ class ConvNextClass():
                             *[model.stages[2].blocks[i] for i in range(9)],
                             model.stages[3].downsample,
                             *[model.stages[3].blocks[i] for i in range(3)],
-                        )
-
-        # model_check = "convnext"
-        return feature_extractor
-
-
+                            
+                            )
+        
+            
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # feature_extractor, _, _ = ConvNextClass.convnext_model(gpu)
         x = self.feature_extractor(x)
@@ -64,8 +58,8 @@ class ConvNextClass():
       
         return x
 
-    # def convnext_model():
-    #     instance = ConvNextClass()
+    # def convnext_model(gpu):
+    #     instance = ConvNextClass(gpu)
     #     # feature_file = 'pretrained_convnext_channel_replicate.npy'
 
     #     return instance.feature_extractor
@@ -73,8 +67,6 @@ class ConvNextClass():
 class ResNetClass():
     def resnet_model(gpu):
         device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
-
-        # device is not needed in class since both models can use the same gpu (models are not used simultaneously)
 
 
         # feature_file = 'pretrained_resnet18_features.npy'
@@ -90,8 +82,8 @@ class ResNetClass():
 
 
 
-def get_save_features(feature_dir, root_dir, model_check, gpu):
-    dataset_names = ['CP','Allen','HPA']
+def get_save_features(feature_dir, root_dir, model_check, gpu, batch_size):
+    dataset_names = ['Allen', 'CP', 'HPA']
     device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
     
     if model_check == "resnet":
@@ -107,13 +99,13 @@ def get_save_features(feature_dir, root_dir, model_check, gpu):
 
         # add feature file here and remove from class
         
-        feature_extractor = ConvNextClass.convnext_model(gpu) # reduce redudancy
+        convnext_instance = ConvNextClass(gpu) # reduce redudancy
         feature_file = 'pretrained_convnext_channel_replicate.npy'
         
         
     for dataset_name in dataset_names:
         dataset = configure_dataset(root_dir, dataset_name)
-        train_dataloader = DataLoader(dataset, batch_size=256, shuffle=False) #reduce batch size to 128
+        train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False) #reduce batch size to 128
         
         all_feat = []
         for images, label in tqdm(train_dataloader, total=len(train_dataloader)):
@@ -129,7 +121,7 @@ def get_save_features(feature_dir, root_dir, model_check, gpu):
                     expanded = preprocess(expanded).to(device)
                     feat_temp = feature_extractor(expanded).cpu().detach().numpy()
                 else: 
-                    feat_temp = feature_extractor.forward(expanded).cpu().detach().numpy()
+                    feat_temp = convnext_instance.forward(expanded).cpu().detach().numpy()
 
                 batch_feat.append(feat_temp)
                 
@@ -145,10 +137,11 @@ def get_save_features(feature_dir, root_dir, model_check, gpu):
 def get_parser():
    
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root_dir", help="The root directory of the original images", type=str, required=True)
-    parser.add_argument("--feat_dir", help="The directory that contains the features", type=str, required=True)
-    parser.add_argument("--model", help="The type of model that is being trained and evaluated (convnext or resnet)", type=str, required=True, choices=['convnext', 'resnet'])
-    parser.add_argument("--gpu", help="The gpu that is currently available/not in use", type=int, required=True)
+    parser.add_argument("--root_dir", type=str, help="The root directory of the original images", required=True)
+    parser.add_argument("--feat_dir", type=str, help="The directory that contains the features", required=True)
+    parser.add_argument("--model", type=str, help="The type of model that is being trained and evaluated (convnext or resnet)", required=True, choices=['convnext', 'resnet'])
+    parser.add_argument("--gpu", type=int, help="The gpu that is currently available/not in use", required=True)
+    parser.add_argument("--batch_size", type=int, default=192, help="Select a batch size that works for your gpu size", required=True)
     
     return parser
 
@@ -161,6 +154,122 @@ if __name__ == '__main__':
     feat_dir = args.feat_dir
     model = args.model
     gpu = args.gpu
+    batch_size = args.batch_size
 
-    get_save_features(feat_dir, root_dir, model, gpu)
+    get_save_features(feat_dir, root_dir, model, gpu, batch_size)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# class ConvNextClass():
+#     def convnext_model(gpu):
+#         device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
+#         # self.feature_extractor = self.init_model()
+
+#         # device can be removed
+#         # init and init_model can be combined into one method
+
+#     # def init_model(self):
+
+#         pretrained = True
+#         model = create_model("convnext_tiny.fb_in22k", pretrained=pretrained).to(device)
+#         feature_extractor = nn.Sequential(
+#                             model.stem,
+#                             model.stages[0],
+#                             model.stages[1],
+#                             model.stages[2].downsample,
+#                             *[model.stages[2].blocks[i] for i in range(9)],
+#                             model.stages[3].downsample,
+#                             *[model.stages[3].blocks[i] for i in range(3)],
+#                         )
+
+#         # model_check = "convnext"
+#         return feature_extractor
+
+
+#     def forward(self, x: torch.Tensor) -> torch.Tensor:
+#         # feature_extractor, _, _ = ConvNextClass.convnext_model(gpu)
+#         x = self.feature_extractor(x)
+#         x = F.adaptive_avg_pool2d(x, (1, 1))
+      
+#         return x
+
+#     # def convnext_model():
+#     #     instance = ConvNextClass()
+#     #     # feature_file = 'pretrained_convnext_channel_replicate.npy'
+
+#     #     return instance.feature_extractor
+
+# class ResNetClass():
+#     def resnet_model(gpu):
+#         device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
+
+#         # device is not needed in class since both models can use the same gpu (models are not used simultaneously)
+
+
+#         # feature_file = 'pretrained_resnet18_features.npy'
+
+
+#         weights = ResNet18_Weights.IMAGENET1K_V1
+#         m = resnet18(weights=weights).to(device)
+#         feature_extractor = torch.nn.Sequential(*list(m.children())[:-1]).to(device)
+
+#         # model_check = "resnet"
+
+#         return weights, feature_extractord
 
