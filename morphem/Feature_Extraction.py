@@ -32,7 +32,7 @@ def configure_dataset(root_dir, dataset_name):
 
 
 class ConvNextClass():
-    def convnext_model():
+    def convnext_model(gpu):
         device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
         # self.feature_extractor = self.init_model()
 
@@ -71,7 +71,7 @@ class ConvNextClass():
     #     return instance.feature_extractor
 
 class ResNetClass():
-    def resnet_model():
+    def resnet_model(gpu):
         device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
 
         # device is not needed in class since both models can use the same gpu (models are not used simultaneously)
@@ -95,7 +95,7 @@ def get_save_features(feature_dir, root_dir, model_check, gpu):
     device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
     
     if model_check == "resnet":
-        weights, feature_extractor = ResNetClass.resnet_model()
+        weights, feature_extractor = ResNetClass.resnet_model(gpu)
         preprocess = weights.transforms()
         feature_file = 'pretrained_resnet18_features.npy'
         # add feature file here and remove from class
@@ -107,7 +107,7 @@ def get_save_features(feature_dir, root_dir, model_check, gpu):
 
         # add feature file here and remove from class
         
-        feature_extractor = ConvNextClass.convnext_model() # reduce redudancy
+        feature_extractor = ConvNextClass.convnext_model(gpu) # reduce redudancy
         feature_file = 'pretrained_convnext_channel_replicate.npy'
         
         
