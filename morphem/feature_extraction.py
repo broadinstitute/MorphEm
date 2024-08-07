@@ -19,6 +19,7 @@ import argparse
 
 
 import folded_dataset
+from folded_dataset import fold_channels # not sure if this works
 # reload(folded_dataset)
 
 
@@ -118,6 +119,8 @@ def get_save_features(feature_dir, root_dir, model_check, gpu, batch_size):
         all_feat = all_feat.squeeze(2).squeeze(2)
         feature_path = feature_path = f'{feature_dir}/{dataset_name}/{feature_file}'
         np.save(feature_path, all_feat)
+        torch.cuda.empty_cache() # new line
+        
 
 
 def get_parser():
