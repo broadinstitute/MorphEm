@@ -31,6 +31,55 @@ def configure_dataset(root_dir, dataset_name):
     return dataset
 
 
+# Added ViTClass()
+
+
+
+
+class ViTClass():
+    def __init__(self, gpu):
+        self.device = f"cuda:{gpu}" if torch.cuda.is_available() else 'cpu'
+
+        dinov2_vits14_reg = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14_reg')
+        dinov2_vits14_reg.eval()
+        dinov2_vits14_reg.to(self.device)
+
+   
+    def init_load_model(self):
+        # device = f"cuda:{gpu}" if torch.cuda.is_available() else 'cpu'
+        
+
+        return self.dinov2_vits14_reg
+
+
+    def refactor_img(base_path, root_dir):
+        # not sure if this is right
+        # base_path = "image path here" #change this to my path once I have images
+        csv_path = os.path.join(base_path, "sc-metadata.csv")
+        fold = folded_dataset.SingleCellDataset(csv_file=csv_path, root_dir=root_dir)
+        # fold = fold_channels
+
+        return fold
+
+
+
+    def channel_to_rgb(channel):
+        px = np.concatenate(
+            (channel[np.newaxis, :, :], channel[np.newaxis, :, :], channel[np.newaxis, :, :]),
+            axis=0)
+        tensor = torch.Tensor(px)[None, ...]
+        normalized_tensor = v2.functional.normalize(tensor, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        
+        return normalized_tensor
+
+
+
+
+
+
+
+
+
 
 
 
