@@ -211,17 +211,17 @@ def get_save_features(feature_dir, root_dir, model_check, gpu, batch_size):
                 # Copy each channel three times 
                 channel = cloned_images[:, i, :, :]
                 channel = channel.unsqueeze(1)
-                expanded = channel.expand(-1, 3, -1, -1).to(device)
+                expanded = channel.expand(-1, 3, -1, -1) # take out to(device)
         
                 if model_check == "resnet":
                     expanded = preprocess(expanded).to(device)
                     feat_temp = feature_extractor(expanded).cpu().detach().numpy()
                     
                 elif model_check == "convnext": 
-                    feat_temp = convnext_instance.forward(expanded).cpu().detach().numpy()
+                    feat_temp = convnext_instance.forward((expanded).to(device)).cpu().detach().numpy()
 
                 else:
-                    # feat_temp = vit_instance.forward(expanded.to(device)).cpu().detach().numpy()
+                    expanded = expanded/255.0 
                     output = vit_model.forward_features((expanded).to(device))
                     # print(type(output))
                     # print(output.keys())
@@ -235,7 +235,7 @@ def get_save_features(feature_dir, root_dir, model_check, gpu, batch_size):
             all_feat.append(batch_feat)
        
         all_feat = np.concatenate(all_feat)
-        print(all_feat.shape)
+        print(all_feat.shape) # delete later
 
         if all_feat.ndim == 4:
             all_feat = all_feat.squeeze(2).squeeze(2)
