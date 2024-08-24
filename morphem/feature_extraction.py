@@ -221,7 +221,7 @@ def get_save_features(feature_dir, root_dir, model_check, gpu, batch_size):
                     feat_temp = convnext_instance.forward((expanded).to(device)).cpu().detach().numpy()
 
                 else:
-                    expanded = expanded/255.0 
+                    #expanded = expanded/255.0 # this may be the reason for the faiss issue
                     output = vit_model.forward_features((expanded).to(device))
                     # print(type(output))
                     # print(output.keys())
