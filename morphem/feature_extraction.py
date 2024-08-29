@@ -19,7 +19,6 @@ import argparse
 
 
 import folded_dataset
-# from folded_dataset import fold_channels # not sure if this works
 # reload(folded_dataset)
 
 
@@ -29,10 +28,6 @@ def configure_dataset(root_dir, dataset_name):
     dataset = folded_dataset.SingleCellDataset(csv_file=df_path, root_dir=root_dir, target_labels='train_test_split')
 
     return dataset
-
-
-# Added ViTClass()
-
 
 
 
@@ -46,42 +41,8 @@ class ViTClass():
 
    
     def get_model(self):
-        # device = f"cuda:{gpu}" if torch.cuda.is_available() else 'cpu'
-        
 
         return self.dinov2_vits14_reg
-
-
-    # def refactor_img(self, base_path, root_dir):
-    #     # not sure if this is right
-    #     # base_path = "image path here" #change this to my path once I have images
-    #     csv_path = os.path.join(base_path, "sc-metadata.csv")
-    #     fold = folded_dataset.SingleCellDataset(csv_file=csv_path, root_dir=root_dir)
-    #     # fold = fold_channels
-
-    #     return fold
-
-
-
-    # def channel_to_rgb(self, channel):
-    #     px = np.concatenate(
-    #         (channel[np.newaxis, :, :], channel[np.newaxis, :, :], channel[np.newaxis, :, :]),
-    #         axis=0)
-    #     tensor = torch.Tensor(px)[None, ...]
-    #     normalized_tensor = v2.functional.normalize(tensor, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        
-    #     return normalized_tensor
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -125,9 +86,6 @@ class ResNetClass():
 
 
 
-
-
-
 def create_pad(images, patch_width, patch_height): # new method for vit model
     N, C, H, W = images.shape
 
@@ -150,10 +108,7 @@ def create_pad(images, patch_width, patch_height): # new method for vit model
     if pad_height % 2 != 0:
         pad_bottom += 1
         
-    
-    # Pad images (pad_left and pad_right are for width)
-    # padded_images = F.pad(images, (pad_left, pad_right, 0, 0), mode='constant', value=0)
-    # padded_images = F.pad(images, (0, 0, pad_top, pad_bottom), mode='constant', value=0)
+
     padded_images = F.pad(images, (pad_left, pad_right, pad_top, pad_bottom), mode='constant', value=0)
     
     return padded_images
@@ -180,8 +135,8 @@ def get_save_features(feature_dir, root_dir, model_check, gpu, batch_size):
         feature_file = 'pretrained_convnext_channel_replicate.npy'
 
     else:
-        vit_instance = ViTClass(gpu)  # new line of code
-        vit_model = vit_instance.get_model() # not sure if I should do this
+        vit_instance = ViTClass(gpu) 
+        vit_model = vit_instance.get_model() 
         feature_file = 'pretrained_vit_features.npy'
         
         
@@ -211,7 +166,7 @@ def get_save_features(feature_dir, root_dir, model_check, gpu, batch_size):
                 # Copy each channel three times 
                 channel = cloned_images[:, i, :, :]
                 channel = channel.unsqueeze(1)
-                expanded = channel.expand(-1, 3, -1, -1) # take out to(device)
+                expanded = channel.expand(-1, 3, -1, -1)
         
                 if model_check == "resnet":
                     expanded = preprocess(expanded).to(device)
@@ -221,12 +176,9 @@ def get_save_features(feature_dir, root_dir, model_check, gpu, batch_size):
                     feat_temp = convnext_instance.forward((expanded).to(device)).cpu().detach().numpy()
 
                 else:
-                    #expanded = expanded/255.0 # this may be the reason for the faiss issue
                     output = vit_model.forward_features((expanded).to(device))
-                    # print(type(output))
-                    # print(output.keys())
                     feat_temp = output["x_norm_clstoken"].cpu().detach().numpy()
-                    # feat_temp = vit_model.forward_features((expanded).to(device)).cpu().detach().numpy()  # new line of code
+                   
                     
 
                 batch_feat.append(feat_temp)
@@ -235,7 +187,6 @@ def get_save_features(feature_dir, root_dir, model_check, gpu, batch_size):
             all_feat.append(batch_feat)
        
         all_feat = np.concatenate(all_feat)
-        print(all_feat.shape) # delete later
 
         if all_feat.ndim == 4:
             all_feat = all_feat.squeeze(2).squeeze(2)
@@ -245,7 +196,6 @@ def get_save_features(feature_dir, root_dir, model_check, gpu, batch_size):
             all_feat = all_feat.squeeze()
 
         
-        # all_feat = all_feat.squeeze(2).squeeze(2)
         feature_path = feature_path = f'{feature_dir}/{dataset_name}/{feature_file}'
         np.save(feature_path, all_feat)
         torch.cuda.empty_cache() # new line
