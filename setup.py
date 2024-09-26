@@ -21,7 +21,10 @@ setup(
     'seaborn==0.12.2',
     'torch==2.0.0',
     'torchvision==0.15.1',
-    'umap_learn==0.5.3'
+    'umap_learn==0.5.3',
+    'tqdm==4.66.4',
+    'timm'
+
     ]
     
 )
