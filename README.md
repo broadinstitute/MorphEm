@@ -1,10 +1,12 @@
 # CHAMMI
 
-The CHAMMI dataset is available for download on [Zenado](https://zenodo.org/record/7988357).
+The CHAMMI dataset is available for download on [Zenodo](https://zenodo.org/record/7988357).
 
 We released model checkpoints and the training scripts to further aid reproducibility. 
 Our code and checkpoints are now publicly available at [here](https://github.com/chaudatascience/channel_adaptive_models).
 
+The CHAMMI paper can be found [here](https://arxiv.org/pdf/2310.19224.pdf) and a short presentation of 
+the project can be found [here](https://neurips.cc/virtual/2023/poster/73620).
 
 ### Note
 
@@ -47,11 +49,18 @@ We use conda because faiss-gpu cannot be installed using pip.
 
 ## Getting Features
 
-Run the "Feature_Extraction.py" file located in the `morphem` directory with the appropriate arguments. Before running the code, make sure to run
+Run the "feature_extraction.py" file located in the `morphem` directory with the appropriate arguments. Before running the code, make sure to run
 ```
 nvidia-smi
 ```
 to check which gpu is available/"more free". Put that gpu number in that corresponding argument's place when running the "Feature_Extraction.py" file (the gpu number is the second-to-last argument to be passed).
+
+An example of running the "feature_extraction.py" file is shown below:
+```
+python feature_extraction.py --root_dir (root directory) --feat_dir (directory that stores features) --model (model type) --gpu 0 --batch_size 64
+```
+
+Replace the parenthesis with your directories and model type appropriately.
 
 
 ### Note
@@ -86,5 +95,19 @@ Optional field include:
 `umap` : Default is False. Whether or not to produce UMAP for features. 
 `knn_metric` : Default is 'l2'. Choose from 'cosine' and 'l2'.
 
-## Example Images from each Dataset with Labels
+## Expected Results from Each Dataset
+### Macro Average Results Comparison
+|                       | <u>**Dataset**</u>  | **Allen/WTC** |          | **HPA** |        |        | **CP** |        |        |        |
+|-----------------------|---------------------|---------------|----------|---------|--------|--------|--------|--------|--------|--------|
+| <u>**Model Type**</u> |                     |    Task 1     |  Task 2  |  Task 1 | Task 2 | Task 3 | Task 1 | Task 2 | Task 3 | Task 4 |
+|-----------------------|                     |---------------|----------|---------|--------|--------|--------|--------|--------|--------|
+| **ResNet**            |                     |      0.54     |  0.48    |   0.52  |  0.33  |  0.21  |  0.63  |  0.33  |  0.27  |  0.09  | 
+|-----------------------|
+| **ConvNext**          |                     |      0.55     |  0.37    |   0.56  |  0.42  |  0.25  |  0.84  |  0.48  |  0.32  |  0.14  |   
+|-----------------------|
+| **ViT**               |                     |      0.61     |  0.46    |   0.69  |  0.50  |  0.26  |  0.81  |  0.46  |  0.24  |  0.11  |
+|-----------------------|---------------------|---------------|----------|---------|--------|--------|--------|--------|--------|--------|                  
+
+
+## Example Images from Each Dataset with Labels
 ![alt text](https://github.com/broadinstitute/MorphEm/blob/main/example_image.png)
