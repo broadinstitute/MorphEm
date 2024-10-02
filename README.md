@@ -97,12 +97,12 @@ Optional field include:
 
 ## Expected Results from Each Dataset
 ### Macro Average Results Comparison
-|                       | *Dataset* | **Allen/WTC**  |                      |     **HPA**     |        |        |    **CP**    |        |        |        |
-|-----------------------|---------------------|---------------|----------|---------|--------|--------|--------|--------|--------|--------|
-| ***Model Type***|                     |    Task 1     |    Task 2       |    Task 1      |  Task 2    | Task 3 | Task 1 | Task 2 | Task 3 | Task 4 |
-| **ResNet**            |                     |      0.54     |  0.48    |   0.52  |  0.33  |  0.21  |  0.63  |  0.33  |  0.27  |  0.09  |
-| **ConvNext**          |                     |      0.55     |  0.37    |   0.56  |  0.42  |  0.25  |  0.84  |  0.48  |  0.32  |  0.14  |
-| **ViT**               |                     |      0.61     |  0.46    |   0.69  |  0.50  |  0.26  |  0.81  |  0.46  |  0.24  |  0.11  |
+|             *Dataset*     :arrow_right:    | **Allen/WTC**  |                      |     **HPA**     |        |        |    **CP**    |        |        |        |
+|----------------------|---------------|----------|---------|--------|--------|--------|--------|--------|--------|
+| ***Model Type***   :arrow_down:|    Task 1     |    Task 2       |    Task 1      |  Task 2    | Task 3 | Task 1 | Task 2 | Task 3 | Task 4 |
+| **ResNet**            |     0.54     |  0.48    |   0.52  |  0.33  |  0.21  |  0.63  |  0.33  |  0.27  |  0.09  |
+| **ConvNext**          |      0.55     |  0.37    |   0.56  |  0.42  |  0.25  |  0.84  |  0.48  |  0.32  |  0.14  |
+| **ViT**               |       0.61     |  0.46    |   0.69  |  0.50  |  0.26  |  0.81  |  0.46  |  0.24  |  0.11  |
 
 ## Example Images from Each Dataset with Labels
 ![alt text](https://github.com/broadinstitute/MorphEm/blob/main/example_image.png)
